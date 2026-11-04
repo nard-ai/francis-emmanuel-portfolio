@@ -1,0 +1,10 @@
+{
+  "description": "Portfolio of Francis Emmanuel M. Cariño. Web design, UI/UX, 3D, interaction, and motion.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

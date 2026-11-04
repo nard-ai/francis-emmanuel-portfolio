@@ -1,0 +1,240 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@1&family=Inter+Tight:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
+  --font-serif: 'Instrument Serif', ui-serif, serif;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  --page: #f7f7f7;
+  --ink: #222222;
+  --ink-2: #626262;
+  --body: #515151;
+  --muted: #9e9e9e;
+  --meta: #7e7e7e;
+  --line: #e1e1e1;
+  --card: #ffffff;
+  --action: #c65d21;
+  --action-hover: #ab4e19;
+  --action-press: #8c3d10;
+  --tint: #ffefe6;
+  --link: #1d6f98;
+  --link-hover: #166086;
+  --chip: #ebf8ff;
+  --live: #7bb026;
+  --live-bg: #f2fdE0;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme='dream'] {
+  --page: #222222;
+  --ink: #f7f7f7;
+  --ink-2: #9e9e9e;
+  --body: #9e9e9e;
+  --muted: #626262;
+  --meta: #7e7e7e;
+  --line: rgba(225, 225, 225, 0.09);
+  --card: rgba(255, 255, 255, 0.035);
+  --link: #ebf8ff;
+  --link-hover: #f7f7f7;
+}
+
+@layer base {
+  html {
+    background: var(--page);
+    color: var(--ink);
+    transition:
+      background-color 400ms var(--ease),
+      color 400ms var(--ease);
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--page);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition:
+      background-color 400ms var(--ease),
+      color 400ms var(--ease);
+  }
+  ::selection {
+    background: var(--action);
+    color: #ffffff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 3px;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+.micro {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+}
+.tracked {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+.idx {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--meta);
+}
+.display {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.052em;
+  line-height: 0.86;
+  white-space: nowrap;
+}
+.fringe {
+  text-shadow:
+    -1px 0 rgba(255, 40, 60, 0.55),
+    1px 0 rgba(0, 220, 255, 0.55);
+}
+.body-copy {
+  font-size: clamp(16px, 1.25vw, 18px);
+  line-height: 1.5;
+  color: var(--body);
+  max-width: 62ch;
+}
+
+/* Theme-aware transitions for surfaces */
+.theme-t {
+  transition:
+    background-color 400ms var(--ease),
+    color 400ms var(--ease),
+    border-color 400ms var(--ease);
+}
+
+/* Mask rise */
+.mask-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.04em;
+}
+.mask-line > span {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 900ms var(--ease);
+}
+.is-open .mask-line > span {
+  transform: translateY(0);
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.orbit {
+  animation: orbit 40s linear infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+.breathe {
+  animation: breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes float-a {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(6px, -10px) rotate(8deg);
+  }
+}
+@keyframes float-b {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-8px, 8px) rotate(-10deg);
+  }
+}
+.float-a {
+  animation: float-a 7s ease-in-out infinite;
+}
+.float-b {
+  animation: float-b 9s ease-in-out infinite;
+}
+
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Hover rows: grow orange rule + shift name */
+.row-line {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 240ms var(--ease);
+}
+.row:hover .row-line,
+.row:focus-visible .row-line {
+  transform: scaleX(1);
+}
+.row-name {
+  transition: transform 240ms var(--ease);
+}
+.row:hover .row-name,
+.row:focus-visible .row-name {
+  transform: translateX(8px);
+}
+
+.reveal-still {
+  clip-path: inset(100% 0 0 0);
+  transform: translateY(12px);
+  opacity: 0;
+  transition:
+    clip-path 400ms var(--ease),
+    transform 400ms var(--ease),
+    opacity 400ms var(--ease);
+}
+.work-row:hover .reveal-still,
+.work-row:focus-within .reveal-still {
+  clip-path: inset(0 0 0 0);
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@media (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit,
+  .breathe,
+  .float-a,
+  .float-b {
+    animation: none;
+  }
+  .mask-line > span {
+    transform: none;
+    transition: none;
+  }
+}
