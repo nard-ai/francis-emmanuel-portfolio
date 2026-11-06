@@ -6,6 +6,8 @@
 # ---------------------------------------------------------------------------
 *.png                filter=lfs diff=lfs merge=lfs -text
 *.jpg                filter=lfs diff=lfs merge=lfs -text
+# Vercel does not pull Git LFS, so this portrait stays as a normal file.
+public/francis-carino.jpg !filter !diff !merge -text
 *.jpeg               filter=lfs diff=lfs merge=lfs -text
 *.gif                filter=lfs diff=lfs merge=lfs -text
 *.bmp                filter=lfs diff=lfs merge=lfs -text
