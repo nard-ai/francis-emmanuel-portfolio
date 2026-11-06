@@ -120,6 +120,20 @@
 }
 
 /* Mask rise */
+.hero-stone,
+.hero-title {
+  top: 50%;
+}
+.hero-stone {
+  width: min(26vh, 56vw);
+  height: min(26vh, 56vw);
+}
+@media (min-width: 768px) {
+  .hero-stone {
+    width: min(30vh, 22vw);
+    height: min(30vh, 22vw);
+  }
+}
 .mask-line {
   display: block;
   overflow: hidden;

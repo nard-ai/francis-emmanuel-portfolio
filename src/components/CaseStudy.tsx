@@ -59,9 +59,8 @@ export function CaseStudy({ index }: { index: number }) {
           </div>
           <dl className="space-y-6 md:col-span-2">
             {[
-              ['Role', p.role],
+              ['Kind', p.kind],
               ['Year', p.year],
-              ['Built with', p.built],
             ].map(([k, v]) => (
               <div key={k} className="border-t border-[var(--line)] pt-3">
                 <dt className="micro text-[var(--muted)]">{k}</dt>

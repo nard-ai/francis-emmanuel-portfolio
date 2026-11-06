@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Still } from './Still'
 import { PROJECTS, pad } from '../data'
 import { scrollToId, scrollToY } from '../lib/motion'
@@ -32,40 +32,34 @@ export function About() {
     <Section id="about">
       <Head n="01" label="About" />
       <p className="tracked mt-14 text-[clamp(22px,3.6vw,56px)] font-semibold leading-[1.12] tracking-[0.12em] text-[var(--ink)] md:mt-20">
-        <span className="block">I design and build websites</span>
-        <span className="block">that stay in the mind</span>
-        <span className="block">
-          like a{' '}
-          <em className="font-serif text-[1.15em] font-normal normal-case tracking-[0] text-[var(--action)]">memory</em>, where web,
-        </span>
-        <span className="block">3D, motion and interaction</span>
-        <span className="block">become one experience.</span>
+        <span className="block">Third-year Information</span>
+        <span className="block">Technology student.</span>
+        <span className="block">He codes, plays badminton,</span>
+        <span className="block">and League of Legends.</span>
       </p>
       <div className="mt-16 grid md:grid-cols-6">
         <p className="body-copy md:col-span-3 md:col-start-4">
-          Francis Emmanuel M. Cariño works across web design, UI/UX, 3D, interaction, and motion. The aim is a site that is clear to use and hard to
-          forget.
+          Francis Emmanuel M. Cariño is responsible, hardworking, and calm in his work. He finished senior high and is still building new skills. He
+          studied at Landayan Elementary School from 2010 to 2016 and at SPRCNHS Landayan Complex from 2016 to 2022. He speaks English and Tagalog. He
+          joins youth events at his local church, where the work depends on teamwork and communication.
         </p>
       </div>
     </Section>
   )
 }
 
-const DISCIPLINES = [
-  ['Web design', 'Pages with a point of view.'],
-  ['UI / UX', 'A path you can feel.'],
-  ['3D', 'Light, glass, and weight.'],
-  ['Interaction', 'A page that answers.'],
-  ['Motion', 'Time, used with care.'],
-  ['Logo and graphic', 'A mark that can hold a site.'],
+const HOBBIES = [
+  ['Coding', 'He likes to code.'],
+  ['Badminton', 'He plays on the court.'],
+  ['League of Legends', 'He plays the game.'],
 ]
 
 export function Disciplines() {
   return (
     <Section id="disciplines">
-      <Head n="02" label="Disciplines" />
+      <Head n="02" label="Hobbies" />
       <ul className="mt-14 border-b border-[var(--line)] md:mt-20">
-        {DISCIPLINES.map(([name, tag], i) => (
+        {HOBBIES.map(([name, tag], i) => (
           <li key={name} tabIndex={0} className="row theme-t relative grid grid-cols-[3rem_1fr] items-baseline gap-y-2 border-t border-[var(--line)] py-6 outline-none md:grid-cols-6 md:py-8">
             <span aria-hidden className="row-line absolute left-0 top-[-1px] h-px w-full bg-[var(--action)]" />
             <span className="idx">({pad(i + 1)})</span>
@@ -117,7 +111,7 @@ export function Works() {
                 {p.name}
               </span>
               <span className="col-start-2 font-mono text-[12px] uppercase leading-[1.6] tracking-[0.04em] text-[var(--ink-2)] md:col-span-1 md:col-start-5">
-                {p.role}
+                {p.kind}
                 <br />
                 {p.year}
               </span>
@@ -223,30 +217,69 @@ export function Recognition() {
 
 export function Contact() {
   const { setTheme } = useTheme()
+  const hello = useRef<HTMLHeadingElement>(null)
+  const [size, setSize] = useState('18vw')
+
+  useLayoutEffect(() => {
+    const fit = () => {
+      const h2 = hello.current
+      const line = h2?.querySelector('[data-fit]') as HTMLElement | null
+      if (!h2 || !line) return
+      const prev = h2.style.fontSize
+      h2.style.fontSize = '100px'
+      line.style.letterSpacing = '-0.052em'
+      line.style.width = 'max-content'
+      const w = line.getBoundingClientRect().width
+      const max = document.documentElement.clientWidth
+      if (!w || !max) {
+        h2.style.fontSize = prev
+        line.style.letterSpacing = ''
+        line.style.width = ''
+        return
+      }
+      let next = (max / w) * 100
+      h2.style.fontSize = `${next}px`
+      const used = line.getBoundingClientRect().width
+      if (used > max) next *= max / used
+      h2.style.fontSize = prev
+      line.style.letterSpacing = ''
+      line.style.width = ''
+      setSize(`${next}px`)
+    }
+    fit()
+    document.fonts?.ready.then(fit)
+    window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
+  }, [])
+
   return (
     <section id="contact" className="theme-t relative z-10 border-t border-[var(--line)] pt-24 md:pt-36">
       <div className="px-5 md:px-10">
         <Head n="06" label="Contact" />
       </div>
-      <h2 className="display mt-12 overflow-hidden pl-5 text-[34vw] uppercase text-[var(--ink)] md:pl-10">
+      <h2 ref={hello} className="display mt-12 text-[var(--ink)] uppercase" style={{ fontSize: size }}>
         <span className="block">Say</span>
-        <span className="block">Hello.</span>
+        <span data-fit className="block w-max pb-[0.14em]">Hello.</span>
       </h2>
       <div className="mt-14 grid gap-12 px-5 md:grid-cols-6 md:px-10">
         <div className="md:col-span-3">
           <a
-            role="link"
-            aria-disabled="true"
+            href="mailto:francisemmanuel1126@gmail.com"
             data-cursor="open"
             className="inline-flex items-center gap-3 text-[clamp(22px,2.4vw,34px)] font-medium tracking-[-0.02em] text-[var(--link)] underline decoration-1 underline-offset-[6px]"
           >
             Send a note
           </a>
-          <p className="idx mt-3">NO ADDRESS ON FILE YET</p>
+          <p className="idx mt-3 break-all">francisemmanuel1126@gmail.com</p>
+          <p className="idx mt-2">
+            <a href="tel:09913009570" className="hover:text-[var(--action)]">
+              09913009570
+            </a>
+          </p>
         </div>
         <div className="md:col-span-2 md:col-start-5">
-          <p className="micro tracking-[0.18em] text-[var(--ink)]">Elsewhere</p>
-          <p className="idx mt-3 text-[var(--muted)]">—</p>
+          <p className="micro tracking-[0.18em] text-[var(--ink)]">Address</p>
+          <p className="mt-3 text-[15px] leading-[1.5] text-[var(--ink-2)]">177 Hernandez St., Barangay Landayan, San Pedro City</p>
         </div>
       </div>
       <div className="mt-24 px-5 md:px-10">

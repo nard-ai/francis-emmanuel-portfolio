@@ -4,29 +4,30 @@ import { PROJECTS } from '../data'
 import { clamp, range, scrollToId } from '../lib/motion'
 import { useTheme } from '../theme'
 
-const LINES = ['Sites you remember.', 'Worlds you enter.']
+const LINES = ['Francis Cariño.', 'Third-year IT student.']
 // Story length in viewports beyond the first.
 const STORY = 3.2
 
-function useHeadlineSize() {
+function useHeadlineSize(head: { current: HTMLHeadingElement | null }) {
   const probe = useRef<HTMLSpanElement>(null)
-  const [size, setSize] = useState('18vw')
+  const [size, setSize] = useState('32px')
   useLayoutEffect(() => {
     const measure = () => {
       const el = probe.current
-      if (!el) return
-      // Width of the shorter line at 100px; size it so that line is ~6% wider than the viewport.
-      const w = el.getBoundingClientRect().width
-      if (!w) return
-      const vw = window.innerWidth
-      const px = Math.min(vw * 0.18, ((vw * 1.06) / w) * 100)
-      setSize(`${px}px`)
+      const h1 = head?.current
+      if (!el || !h1) return
+      // max-content width at 100px, then scale so the longer line fits the heading box.
+      const w = el.scrollWidth
+      const box = h1.clientWidth
+      if (!w || !box) return
+      const byHeight = (window.innerHeight * 0.18) / 0.86
+      setSize(`${Math.min((box / w) * 96, byHeight)}px`)
     }
     measure()
     document.fonts?.ready.then(measure)
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
-  }, [])
+  }, [head])
   return { probe, size }
 }
 
@@ -111,7 +112,8 @@ function HoldRing() {
 
 export function Hero({ opened, reduced }: { opened: boolean; reduced: boolean }) {
   const section = useRef<HTMLElement>(null)
-  const { probe, size } = useHeadlineSize()
+  const head = useRef<HTMLHeadingElement>(null)
+  const { probe, size } = useHeadlineSize(head)
   const [f, setF] = useState({ s: 0, t: 0, px: 0, py: 0 })
   const ptr = useRef({ x: 0, y: 0, sx: 0, sy: 0 })
 
@@ -156,33 +158,15 @@ export function Hero({ opened, reduced }: { opened: boolean; reduced: boolean })
     <section id="top" ref={section} className="relative" style={{ height: story ? `${(STORY + 1) * 100}vh` : '100vh' }}>
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         {/* probe for headline sizing */}
-        <span ref={probe} aria-hidden className="display pointer-events-none invisible absolute left-0 top-0 text-[100px]">
+        <span ref={probe} aria-hidden className="display pointer-events-none invisible absolute left-0 top-0 w-max text-[100px]">
           {LINES[1]}
         </span>
 
-        {/* Headline */}
-        <h1
-          className={`display absolute left-1/2 top-1/2 z-10 text-[var(--ink)] ${opened ? 'is-open' : ''}`}
-          style={{
-            fontSize: size,
-            transform: `translate(-50%, calc(-54% - ${fade * 30}vh))`,
-            opacity: 1 - fade,
-          }}
-        >
-          {LINES.map((l, i) => (
-            <span key={l} className="mask-line text-center">
-              <span style={{ transitionDelay: `${i * 90}ms` }}>{l}</span>
-            </span>
-          ))}
-        </h1>
-
-        {/* Glow, light pool, stone, orbit */}
+        {/* Orb first, so the headline paints in front of it. */}
         <div
-          className="absolute left-1/2 top-1/2 z-20"
+          className="hero-stone absolute left-1/2 z-20"
           style={{
-            width: 'min(46vh, 64vw)',
-            height: 'min(46vh, 64vw)',
-            transform: `translate(-50%, -50%) translate(${px * 8}px, ${py * 8}px)`,
+            transform: `translate(-50%, -50%)`,
             opacity: opened ? 1 : 0,
             transition: 'opacity 900ms var(--ease) 200ms',
           }}
@@ -227,6 +211,22 @@ export function Hero({ opened, reduced }: { opened: boolean; reduced: boolean })
           </svg>
         </div>
 
+        <h1
+          ref={head}
+          className={`display absolute inset-x-5 top-1/2 z-10 text-center text-[var(--ink)] md:inset-x-10 ${opened ? 'is-open' : ''}`}
+          style={{
+            fontSize: size,
+            transform: `translateY(calc(-50% - ${fade * 24}vh))`,
+            opacity: 1 - fade,
+          }}
+        >
+          {LINES.map((l, i) => (
+            <span key={l} className="mask-line text-center">
+              <span style={{ transitionDelay: `${i * 90}ms` }}>{l}</span>
+            </span>
+          ))}
+        </h1>
+
         {/* Project names over the shards */}
         {story &&
           PROJECTS.map((p, k) => {
@@ -235,19 +235,24 @@ export function Hero({ opened, reduced }: { opened: boolean; reduced: boolean })
             return (
               <div
                 key={p.id}
-                className="absolute inset-x-5 top-1/2 z-30 flex items-center justify-center gap-6 md:inset-x-10"
+                className="hero-title absolute inset-x-0 z-30"
                 style={{ opacity: o, transform: `translateY(calc(-50% + ${(1 - o) * 18}px))` }}
               >
-                <div className="text-center">
+                <div className="flex w-full flex-col items-center px-5 text-center md:px-10">
                   <p className="idx mb-3">({String(k + 1).padStart(2, '0')})</p>
-                  <h2 className="tracked text-[clamp(28px,6vw,96px)] font-semibold leading-none tracking-[0.14em] text-[var(--ink)]">{p.name}</h2>
+                  <h2
+                    className="inline-block text-[clamp(26px,5.4vw,88px)] font-semibold uppercase leading-none text-[var(--ink)]"
+                    style={{ letterSpacing: '0.08em', marginRight: '-0.08em' }}
+                  >
+                    {p.name}
+                  </h2>
                   <p className="mt-4 text-[15px] text-[var(--ink-2)]">{p.kind}</p>
                 </div>
                 <button
                   type="button"
                   data-cursor="view"
                   onClick={() => scrollToId(`case-${p.id}`)}
-                  className="micro hidden shrink-0 rounded-full bg-[var(--action)] px-5 py-3 text-white transition-colors hover:bg-[var(--action-hover)] active:bg-[var(--action-press)] sm:block"
+                  className="micro absolute top-1/2 right-6 hidden -translate-y-1/2 rounded-full bg-[var(--action)] px-5 py-3 text-white transition-colors hover:bg-[var(--action-hover)] active:bg-[var(--action-press)] md:right-10 md:block"
                   style={{ pointerEvents: o > 0.5 ? 'auto' : 'none' }}
                 >
                   View project
@@ -258,18 +263,21 @@ export function Hero({ opened, reduced }: { opened: boolean; reduced: boolean })
 
         {/* Lower labels */}
         <div
-          className="absolute inset-x-5 bottom-20 z-40 flex items-end justify-between gap-6 md:inset-x-10 md:bottom-10"
+          className="absolute inset-x-5 bottom-24 z-40 flex flex-col items-start gap-6 sm:bottom-10 sm:flex-row sm:items-end sm:justify-between sm:gap-6 md:inset-x-10"
           style={{ opacity: opened ? 1 - fade * 1.4 : 0, transition: 'opacity 700ms var(--ease)', pointerEvents: fade > 0.6 ? 'none' : 'auto' }}
         >
-          <div className="micro space-y-4 tracking-[0.18em] text-[var(--ink)]">
-            <p>Web and interactive designer</p>
+          <div className="micro min-w-0 flex-1 space-y-3 tracking-[0.14em] text-[var(--ink)] md:space-y-4 md:tracking-[0.18em]">
+            <p>Information Technology student</p>
             <p className="text-[var(--ink-2)]">
-              Web · Motion
+              3rd year, college
               <br />
-              Interaction · 3D · UI/UX
+              Coding · Badminton
+              <br className="sm:hidden" />
+              <span className="hidden sm:inline"> · </span>
+              League of Legends
             </p>
           </div>
-          <div className="flex flex-col items-end gap-5">
+          <div className="flex flex-col items-start gap-4 sm:items-end sm:gap-5">
             <HoldRing />
             <p className="micro flex items-center gap-2 text-[var(--ink-2)]">
               <span aria-hidden className="breathe inline-block h-1.5 w-1.5 rounded-full bg-[var(--action)]" />
