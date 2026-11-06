@@ -37,7 +37,12 @@ export function About() {
         <span className="block">He codes, plays badminton,</span>
         <span className="block">and League of Legends.</span>
       </p>
-      <div className="mt-16 grid md:grid-cols-6">
+      <div className="mt-16 grid items-start gap-10 md:grid-cols-6">
+        <img
+          src={`${import.meta.env.BASE_URL}francis-carino.jpg`}
+          alt="Francis Emmanuel M. Cariño"
+          className="w-full md:col-span-2"
+        />
         <p className="body-copy md:col-span-3 md:col-start-4">
           Francis Emmanuel M. Cariño is responsible, hardworking, and calm in his work. He finished senior high and is still building new skills. He
           studied at Landayan Elementary School from 2010 to 2016 and at SPRCNHS Landayan Complex from 2016 to 2022. He speaks English and Tagalog. He
